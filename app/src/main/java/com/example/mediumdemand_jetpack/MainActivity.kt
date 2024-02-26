@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -34,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -53,10 +55,14 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Column(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)) {
+                    Column(modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)) {
                         TopBar()
 
                         RowScroll()
+
+                        ColumnScroll()
                     }
                 }
             }
@@ -106,7 +112,9 @@ fun TopBar() {
 @Composable
 fun RowScroll() {
     LazyRow(
-        modifier = Modifier.background(MaterialTheme.colorScheme.background).padding(top = 16.dp, start = 16.dp, end = 16.dp),
+        modifier = Modifier
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween) {
         items(20) {content ->
             ContentRow(content)
@@ -115,8 +123,8 @@ fun RowScroll() {
 }
 
 @Composable
-fun ContentRow(content: Int) {
-    val image: Painter = if(content % 2 == 0) {
+fun ContentRow(id: Int) {
+    val image: Painter = if(id % 2 == 0) {
         painterResource(R.drawable.photo1)
     }
     else {
@@ -147,6 +155,51 @@ fun ContentRow(content: Int) {
     }
 }
 
+@Composable
+fun ColumnScroll() {
+    LazyColumn() {
+        items(20) {item ->
+            ContentColumn(id = item)
+        }
+    }
+}
+
+@Composable
+fun ContentColumn(id: Int) {
+    val string: String
+    val image: Painter
+
+    if(id % 2 == 0 ) {
+        image = painterResource(R.drawable.photo1)
+        string = "This is my bedroom"
+    }else {
+        image = painterResource(id = R.drawable.photo2)
+        string = "This is my Garden"
+    }
+
+    Column(modifier = Modifier.padding(8.dp)) {
+        Image(painter = image, contentDescription = "Colummn Image")
+        Row(modifier = Modifier.padding(top = 4.dp)) {
+            Icon(imageVector = Icons.Default.Favorite, contentDescription = "Like status" )
+            Icon(imageVector = Icons.Default.Share, contentDescription = "Comment", modifier = Modifier.padding(start = 8.dp))
+        }
+        Column {
+            Text(text = string)
+            Text(
+                text = "Published 27/1-24 10:04",
+                fontSize = 8.sp
+            )
+        }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ContentColumnPreview() {
+    ColumnScroll()
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ContentRowPreview() {
@@ -163,4 +216,14 @@ fun TopBarReview() {
 @Composable
 fun RowScrollPreview() {
     RowScroll()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun FullAppReview() {
+    Column {
+        TopBar()
+        RowScroll()
+        ColumnScroll()
+    }
 }
