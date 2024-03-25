@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "MediumDemand_Jetpack"
 include(":app")
- 
+include(":app:benchmark")
