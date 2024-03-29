@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -36,12 +37,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTagsAsResourceId
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
@@ -50,6 +55,7 @@ import com.example.mediumdemand_jetpack.ui.theme.MediumDemand_JetpackTheme
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalComposeUiApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -63,6 +69,9 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .background(MaterialTheme.colorScheme.background)
+                            .semantics {
+                                testTagsAsResourceId = true
+                            }
                     ) {
 
                         MainApp()
@@ -94,11 +103,12 @@ fun MainApp() {
                                     }
                                 }
                             },
+
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
                                 contentDescription = "Close Menu",
-                                modifier = Modifier.size(32.dp)
+                                modifier = Modifier.size(32.dp).testTag("close_nav")
                             )
                         }
                         NavigationDrawerItem(
@@ -139,7 +149,7 @@ fun MainApp() {
                                             if (isClosed) open() else close()
                                         }
                                     }
-                                }, modifier = Modifier.padding(top = 16.dp)
+                                }, modifier = Modifier.padding(top = 16.dp).testTag("open_nav")
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Menu,
@@ -163,10 +173,12 @@ fun RowScroll() {
     LazyRow(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
+            .padding(16.dp)
+            .testTag("row_list")
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        items(20) { content ->
+        items(10) { content ->
             ContentRow(content)
         }
     }
@@ -207,8 +219,8 @@ fun ContentRow(id: Int) {
 
 @Composable
 fun ColumnScroll() {
-    LazyColumn() {
-        items(20) { item ->
+    LazyColumn(modifier = Modifier.testTag("post_list")) {
+        items(10) { item ->
             ContentColumn(id = item)
         }
     }
@@ -228,7 +240,13 @@ fun ContentColumn(id: Int) {
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
-        Image(painter = image, contentDescription = "Colummn Image")
+        Image(
+            painter = image,
+            contentDescription = "Colummn Image",
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.aspectRatio(1052f / 714f)
+        )
+
         Row(modifier = Modifier.padding(top = 4.dp)) {
             Icon(imageVector = Icons.Default.Favorite, contentDescription = "Like status")
             Icon(
