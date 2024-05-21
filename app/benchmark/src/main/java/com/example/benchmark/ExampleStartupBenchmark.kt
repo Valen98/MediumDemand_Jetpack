@@ -129,4 +129,17 @@ class ExampleStartupBenchmark {
 
         device.waitForIdle()
     }
+
+    @Test
+    fun allTest() = benchmarkRule.measureRepeated(
+        packageName = "com.example.mediumdemand_jetpack",
+        metrics = listOf(FrameTimingMetric()),
+        iterations = 100,
+        startupMode = StartupMode.COLD
+    ) {
+        pressHome()
+        startActivityAndWait()
+        scrollPostList()
+        scrollRowList()
+    }
 }
